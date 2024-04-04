@@ -8,7 +8,14 @@ const port = process.env.PORT || 3000;
 // Create a WebSocket server
 const wss = new WebSocket.Server({ port }, () => console.log('Listening on port:', port));
 
-wss.on('connection', ws => {
+wss.on('connection', (ws,req) => {
+     // Check if the request path matches '/mypass'
+     if (req.url !== '/mypass') {
+        ws.send(JSON.stringify({ "code": 500 }));
+        ws.close(); // Close the connection after sending the error message
+        return; // Exit the event handler to prevent further execution
+    }
+
     console.log("New connection established");
     ws.once('message', msg => {
         const [VERSION] = msg;
