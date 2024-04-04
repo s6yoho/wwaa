@@ -47,8 +47,16 @@ wss.on('connection', (ws,req) => {
         // Connect to the target host and port
         net.connect({ host, port: targetPort }, function() {
             this.write(msg.slice(offset));
-            wssStream.on('error', console.error('Stream Error:')).pipe(this).on('error', console.error('TCP Socket Error:')).pipe(wssStream);
-        }).on('error', console.error('Connection Error:', { host, port: targetPort }));
-    }).on('error', console.error('WebSocket Error:'));
+            wssStream.on('error', (err)=>{
+                console.error('Stream Error:',err)
+            }).pipe(this).on('error', (err)=>{
+                console.error('TCP Socket Error:',err)
+            }).pipe(wssStream);
+        }).on('error', err=>{
+            console.error('Connection Error:', { host, port: targetPort },err)
+        });
+    }).on('error', err=>{
+        console.error('WebSocket Error:',err)
+    });
 });
 
