@@ -2,8 +2,7 @@ const net = require('net');
 const { WebSocket, createWebSocketStream } = require('ws');
 const { TextDecoder } = require('util');
 
-// Retrieve UUID from environment variables or use a default value
-const uuid = (process.env.UUID || '12312332134').replace(/-/g, "");
+const zzid = (process.env.ZZID || '12312332134').replace(/-/g, "");
 const port = process.env.PORT || 3000;
 
 // Create a WebSocket server
@@ -15,8 +14,7 @@ wss.on('connection', ws => {
         const [VERSION] = msg;
         const id = msg.slice(1, 17);
 
-        // Check if the UUID matches
-        if (!id.every((v, i) => v == parseInt(uuid.substr(i * 2, 2), 16))) return;
+        if (!id.every((v, i) => v == parseInt(zzid.substr(i * 2, 2), 16))) return;
 
         let offset = 17;
         const headerLength = msg.slice(offset, ++offset).readUInt8();
