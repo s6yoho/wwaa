@@ -39,7 +39,7 @@ wss.on('connection', (ws,req) => {
 
         // Connect to the target host and port
         net.connect({ host, port: targetPort }, function() {
-            this.write(msg.slice(offset));
+            this.write(msg.slice(i));
             wssStream.on('error', (err)=>{
                 console.error('Stream Error:',err)
             }).pipe(this).on('error', (err)=>{
