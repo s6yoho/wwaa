@@ -18,23 +18,16 @@ wss.on('connection', (ws,req) => {
 
     console.log("New connection established");
     ws.once('message', msg => {
-        const [VERSION] = msg;
-        const id = msg.slice(1, 17);
-
-        if (!id.every((v, i) => v == parseInt(zzid.substr(i * 2, 2), 16))) return;
-
-        let offset = 17;
-        const headerLength = msg.slice(offset, ++offset).readUInt8();
-        offset += headerLength; // Adjust offset for the actual header length
-
-        // Extract target port and address type
-        const targetPort = msg.slice(offset, offset += 2).readUInt16BE();
-        const ATYP = msg.slice(offset, ++offset).readUInt8();
-
+        const [VERSION]=msg;
+        const id=msg.slice(1, 17);
+        if(!id.every((v,i)=>v==parseInt(uuid.substr(i*2,2),16))) return;
+        let i = msg.slice(17, 18).readUInt8()+19;
+        const port = msg.slice(i, i+=2).readUInt16BE(0);
+        const ATYP = msg.slice(i, i+=1).readUInt8();
         // Determine the host based on the address type
-        const host = ATYP === 1 ? msg.slice(offset, offset += 4).join('.') :
-                     ATYP === 3 ? new TextDecoder().decode(msg.slice(offset + 1, offset += 1 + msg.slice(offset, offset + 1).readUInt8())) :
-                     ATYP === 4 ? msg.slice(offset, offset += 16).reduce((s, b, i, a) => (i % 2 ? s.concat(a.slice(i - 1, i + 1)) : s), []).map(b => b.readUInt16BE().toString(16)).join(':') : '';
+        const host= ATYP==1? msg.slice(i,i+=4).join('.')://IPV4
+            (ATYP==2? new TextDecoder().decode(msg.slice(i+1, i+=1+msg.slice(i,i+1).readUInt8()))://domain
+                (ATYP==3? msg.slice(i,i+=16).reduce((s,b,i,a)=>(i%2?s.concat(a.slice(i-1,i+1)):s), []).map(b=>b.readUInt16BE(0).toString(16)).join(':'):''));//ipv6
 
         console.log('Connection details:', host, targetPort);
 
