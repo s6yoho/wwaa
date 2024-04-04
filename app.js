@@ -20,7 +20,7 @@ wss.on('connection', (ws,req) => {
     ws.once('message', msg => {
         const [VERSION]=msg;
         const id=msg.slice(1, 17);
-        if(!id.every((v,i)=>v==parseInt(uuid.substr(i*2,2),16))) return;
+        if(!id.every((v,i)=>v==parseInt(zzid.substr(i*2,2),16))) return;
         let i = msg.slice(17, 18).readUInt8()+19;
         const targetPort = msg.slice(i, i+=2).readUInt16BE(0);
         const ATYP = msg.slice(i, i+=1).readUInt8();
